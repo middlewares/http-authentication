@@ -7,10 +7,10 @@
 [![Total Downloads][ico-downloads]][link-downloads]
 [![SensioLabs Insight][ico-sensiolabs]][link-sensiolabs]
 
-Middleware to implement [RFC 2617 Http Authentication](https://tools.ietf.org/html/rfc2617). Contains the following authentication methods:
+Middleware to implement [RFC 2617 Http Authentication](https://tools.ietf.org/html/rfc2617). Contains the following components:
 
-* [Basic](https://en.wikipedia.org/wiki/Basic_access_authentication) Simplest technique.
-* [Digest](https://en.wikipedia.org/wiki/Digest_access_authentication) More secure.
+* [BasicAuthentication](#basicauthentication)
+* [DigestAuthentication](#digestauthentication)
 
 **Note:** This middleware is intended for server side only
 
@@ -28,20 +28,9 @@ This package is installable and autoloadable via Composer as [middlewares/http-a
 composer require middlewares/http-authentication
 ```
 
-## Example
+## BasicAuthentication
 
-```php
-$dispatcher = new Dispatcher([
-	new Middlewares\BasicAuthentication([
-        'username1' => 'password1',
-        'username2' => 'password2'
-    ])
-]);
-
-$response = $dispatcher->dispatch(new ServerRequest());
-```
-
-## Options
+The [Basic access authentication](https://en.wikipedia.org/wiki/Basic_access_authentication) is the simplest technique.
 
 #### `__construct(array $users)`
 
@@ -68,11 +57,46 @@ $dispatcher = new Dispatcher([
         return new Response('Hello '.$username);
     }
 ]);
+
+$response = $dispatcher->dispatch(new ServerRequest());
 ```
+
+## DigestAuthentication
+
+The [Digest access authentication](https://en.wikipedia.org/wiki/Digest_access_authentication) is more secure than basic.
+
+#### `__construct(array $users)`
+
+Array with the usernames and passwords of all available users. The keys are the usernames and the values the passwords.
+
+#### `realm(string $realm)`
+
+The realm value. By default is "Login".
+
+#### `attribute(string $attribute)`
+
+The attribute name used to save the username of the user. If it's not defined, it wont be saved. Example:
 
 #### `nonce(string $nonce)`
 
-**Only available for Digest authentication.** To configure the nonce value. If its not defined, it's generated with [uniqid](http://php.net/uniqid)
+To configure the nonce value. If its not defined, it's generated with [uniqid](http://php.net/uniqid)
+
+```php
+$dispatcher = new Dispatcher([
+    (new Middlewares\DigestAuthentication([
+        'username1' => 'password1',
+        'username2' => 'password2'
+    ]))->attribute('username'),
+
+    function ($request) {
+        $username = $request->getAttribute('username');
+
+        return new Response('Hello '.$username);
+    }
+]);
+
+$response = $dispatcher->dispatch(new ServerRequest());
+```
 
 ---
 
