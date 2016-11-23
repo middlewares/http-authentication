@@ -132,7 +132,7 @@ class DigestAuthentication extends HttpAuthentication implements ServerMiddlewar
             'qop' => 1,
             'username' => 1,
             'uri' => 1,
-            'response' => 1
+            'response' => 1,
         ];
 
         $data = [];

@@ -1,7 +1,7 @@
 # middlewares/http-authentication
 
 [![Latest Version on Packagist][ico-version]][link-packagist]
-[![Software License][ico-license]](LICENSE.md)
+[![Software License][ico-license]](LICENSE)
 [![Build Status][ico-travis]][link-travis]
 [![Quality Score][ico-scrutinizer]][link-scrutinizer]
 [![Total Downloads][ico-downloads]][link-downloads]
@@ -11,8 +11,6 @@ Middleware to implement [RFC 2617 Http Authentication](https://tools.ietf.org/ht
 
 * [BasicAuthentication](#basicauthentication)
 * [DigestAuthentication](#digestauthentication)
-
-**Note:** This middleware is intended for server side only
 
 ## Requirements
 

@@ -3,9 +3,10 @@
 namespace Middlewares\Tests;
 
 use Middlewares\BasicAuthentication;
+use Middlewares\Utils\Dispatcher;
+use Middlewares\Utils\CallableMiddleware;
 use Zend\Diactoros\ServerRequest;
 use Zend\Diactoros\Response;
-use mindplay\middleman\Dispatcher;
 
 class BasicAuthenticationTest extends \PHPUnit_Framework_TestCase
 {
@@ -29,12 +30,12 @@ class BasicAuthenticationTest extends \PHPUnit_Framework_TestCase
                 ->realm('My realm')
                 ->attribute('auth-username'),
 
-            function ($request) {
+            new CallableMiddleware(function ($request) {
                 $response = new Response();
                 $response->getBody()->write($request->getAttribute('auth-username'));
 
                 return $response;
-            },
+            }),
         ]))->dispatch($request);
 
         $this->assertInstanceOf('Psr\\Http\\Message\\ResponseInterface', $response);
