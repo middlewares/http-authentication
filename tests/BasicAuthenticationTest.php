@@ -4,17 +4,17 @@ namespace Middlewares\Tests;
 
 use Middlewares\BasicAuthentication;
 use Middlewares\Utils\Dispatcher;
-use Middlewares\Utils\CallableMiddleware;
-use Zend\Diactoros\ServerRequest;
-use Zend\Diactoros\Response;
+use Middlewares\Utils\Factory;
 
 class BasicAuthenticationTest extends \PHPUnit_Framework_TestCase
 {
     public function testError()
     {
+        $request = Factory::createServerRequest();
+
         $response = (new Dispatcher([
             (new BasicAuthentication(['user' => 'pass']))->realm('My realm'),
-        ]))->dispatch(new ServerRequest());
+        ]))->dispatch($request);
 
         $this->assertInstanceOf('Psr\\Http\\Message\\ResponseInterface', $response);
         $this->assertSame(401, $response->getStatusCode());
@@ -23,19 +23,17 @@ class BasicAuthenticationTest extends \PHPUnit_Framework_TestCase
 
     public function testSuccess()
     {
-        $request = (new ServerRequest())->withHeader('Authorization', 'Basic '.base64_encode('user:pass'));
+        $request = Factory::createServerRequest()
+            ->withHeader('Authorization', 'Basic '.base64_encode('user:pass'));
 
         $response = (new Dispatcher([
             (new BasicAuthentication(['user' => 'pass']))
                 ->realm('My realm')
                 ->attribute('auth-username'),
 
-            new CallableMiddleware(function ($request) {
-                $response = new Response();
-                $response->getBody()->write($request->getAttribute('auth-username'));
-
-                return $response;
-            }),
+            function ($request) {
+                echo $request->getAttribute('auth-username');
+            },
         ]))->dispatch($request);
 
         $this->assertInstanceOf('Psr\\Http\\Message\\ResponseInterface', $response);
