@@ -4,17 +4,15 @@ namespace Middlewares\Tests;
 
 use Middlewares\DigestAuthentication;
 use Middlewares\Utils\Dispatcher;
-use Middlewares\Utils\CallableMiddleware;
-use Zend\Diactoros\ServerRequest;
-use Zend\Diactoros\Response;
+use Middlewares\Utils\Factory;
 
 class DigestAuthenticationTest extends \PHPUnit_Framework_TestCase
 {
     public function testError()
     {
-        $response = (new Dispatcher([
+        $response = Dispatcher::run([
             (new DigestAuthentication(['user' => 'pass']))->realm('My realm')->nonce('xxx'),
-        ]))->dispatch(new ServerRequest());
+        ]);
 
         $this->assertInstanceOf('Psr\\Http\\Message\\ResponseInterface', $response);
         $this->assertSame(401, $response->getStatusCode());
@@ -27,22 +25,19 @@ class DigestAuthenticationTest extends \PHPUnit_Framework_TestCase
     public function testSuccess()
     {
         $nonce = uniqid();
-        $request = (new ServerRequest([], [], '/'))
+        $request = Factory::createServerRequest([], 'GET', '/')
             ->withHeader('Authorization', $this->authHeader('user', 'pass', 'My realm', $nonce));
 
-        $response = (new Dispatcher([
+        $response = Dispatcher::run([
             (new DigestAuthentication(['user' => 'pass']))
                 ->nonce($nonce)
                 ->realm('My realm')
                 ->attribute('auth-username'),
 
-            new CallableMiddleware(function ($request) {
-                $response = new Response();
-                $response->getBody()->write($request->getAttribute('auth-username'));
-
-                return $response;
-            }),
-        ]))->dispatch($request);
+            function ($request) {
+                echo $request->getAttribute('auth-username');
+            },
+        ], $request);
 
         $this->assertInstanceOf('Psr\\Http\\Message\\ResponseInterface', $response);
         $this->assertSame(200, $response->getStatusCode());

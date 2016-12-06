@@ -10,11 +10,9 @@ class BasicAuthenticationTest extends \PHPUnit_Framework_TestCase
 {
     public function testError()
     {
-        $request = Factory::createServerRequest();
-
-        $response = (new Dispatcher([
+        $response = Dispatcher::run([
             (new BasicAuthentication(['user' => 'pass']))->realm('My realm'),
-        ]))->dispatch($request);
+        ]);
 
         $this->assertInstanceOf('Psr\\Http\\Message\\ResponseInterface', $response);
         $this->assertSame(401, $response->getStatusCode());
@@ -26,7 +24,7 @@ class BasicAuthenticationTest extends \PHPUnit_Framework_TestCase
         $request = Factory::createServerRequest()
             ->withHeader('Authorization', 'Basic '.base64_encode('user:pass'));
 
-        $response = (new Dispatcher([
+        $response = Dispatcher::run([
             (new BasicAuthentication(['user' => 'pass']))
                 ->realm('My realm')
                 ->attribute('auth-username'),
@@ -34,7 +32,7 @@ class BasicAuthenticationTest extends \PHPUnit_Framework_TestCase
             function ($request) {
                 echo $request->getAttribute('auth-username');
             },
-        ]))->dispatch($request);
+        ], $request);
 
         $this->assertInstanceOf('Psr\\Http\\Message\\ResponseInterface', $response);
         $this->assertSame(200, $response->getStatusCode());
