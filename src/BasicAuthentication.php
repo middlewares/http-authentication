@@ -4,10 +4,10 @@ namespace Middlewares;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Interop\Http\Middleware\ServerMiddlewareInterface;
-use Interop\Http\Middleware\DelegateInterface;
+use Interop\Http\ServerMiddleware\MiddlewareInterface;
+use Interop\Http\ServerMiddleware\DelegateInterface;
 
-class BasicAuthentication extends HttpAuthentication implements ServerMiddlewareInterface
+class BasicAuthentication extends HttpAuthentication implements MiddlewareInterface
 {
     /**
      * Process a server request and return a response.
