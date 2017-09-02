@@ -2,11 +2,12 @@
 
 namespace Middlewares\Tests;
 
+use PHPUnit\Framework\TestCase;
 use Middlewares\DigestAuthentication;
 use Middlewares\Utils\Dispatcher;
 use Middlewares\Utils\Factory;
 
-class DigestAuthenticationTest extends \PHPUnit_Framework_TestCase
+class DigestAuthenticationTest extends TestCase
 {
     public function testError()
     {
