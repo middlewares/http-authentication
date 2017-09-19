@@ -2,10 +2,13 @@
 
 namespace Middlewares;
 
+use ArrayAccess;
+use InvalidArgumentException;
+
 abstract class HttpAuthentication
 {
     /**
-     * @var array The available users
+     * @var array|ArrayAccess The available users
      */
     protected $users;
 
@@ -22,10 +25,16 @@ abstract class HttpAuthentication
     /**
      * Define de users.
      *
-     * @param array $users [username => password]
+     * @param array|ArrayAccess $users [username => password]
      */
     public function __construct(array $users)
     {
+        if (!is_array($users) && !($users instanceof ArrayAccess)) {
+            throw new InvalidArgumentException(
+                'The users argument must be an array or implement the ArrayAccess interface'
+            );
+        }
+
         $this->users = $users;
     }
 

@@ -30,9 +30,9 @@ composer require middlewares/http-authentication
 
 The [Basic access authentication](https://en.wikipedia.org/wiki/Basic_access_authentication) is the simplest technique.
 
-#### `__construct(array $users)`
+#### `__construct(array|ArrayAccess $users)`
 
-Array with the usernames and passwords of all available users. The keys are the usernames and the values the passwords.
+`Array` or `ArrayAccess` with the usernames and passwords of all available users. The keys are the usernames and the values the passwords.
 
 #### `realm(string $realm)`
 
@@ -63,9 +63,9 @@ $response = $dispatcher->dispatch(new ServerRequest());
 
 The [Digest access authentication](https://en.wikipedia.org/wiki/Digest_access_authentication) is more secure than basic.
 
-#### `__construct(array $users)`
+#### `__construct(array|ArrayAccess $users)`
 
-Array with the usernames and passwords of all available users. The keys are the usernames and the values the passwords.
+`Array` or `ArrayAccess` with the usernames and passwords of all available users. The keys are the usernames and the values the passwords.
 
 #### `realm(string $realm)`
 

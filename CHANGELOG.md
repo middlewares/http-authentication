@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Changed the configuration of phpcs and php_cs
 * Upgraded phpunit to the latest version and improved its config file
 
+### Added
+
+* The `$users` argument of the constructor can be an `ArrayAccess`.
+
 ## 0.3.0 - 2016-12-26
 
 ### Changed
