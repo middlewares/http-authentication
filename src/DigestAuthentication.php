@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 
 namespace Middlewares;
 
@@ -16,12 +17,8 @@ class DigestAuthentication extends HttpAuthentication implements MiddlewareInter
 
     /**
      * Set the nonce value.
-     *
-     * @param string $nonce
-     *
-     * @return self
      */
-    public function nonce($nonce)
+    public function nonce(string $nonce): self
     {
         $this->nonce = $nonce;
 
@@ -30,13 +27,8 @@ class DigestAuthentication extends HttpAuthentication implements MiddlewareInter
 
     /**
      * Process a server request and return a response.
-     *
-     * @param ServerRequestInterface  $request
-     * @param RequestHandlerInterface $handler
-     *
-     * @return ResponseInterface
      */
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler)
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $username = $this->login($request);
 
@@ -61,8 +53,6 @@ class DigestAuthentication extends HttpAuthentication implements MiddlewareInter
 
     /**
      * Check the user credentials and return the username or false.
-     *
-     * @param ServerRequestInterface $request
      *
      * @return false|string
      */
@@ -90,14 +80,8 @@ class DigestAuthentication extends HttpAuthentication implements MiddlewareInter
 
     /**
      * Validates the authorization.
-     *
-     * @param array  $authorization
-     * @param string $method
-     * @param string $password
-     *
-     * @return bool
      */
-    private function isValid(array $authorization, $method, $password)
+    private function isValid(array $authorization, string $method, string $password): bool
     {
         $validResponse = md5(sprintf(
             '%s:%s:%s:%s:%s:%s',
@@ -115,11 +99,9 @@ class DigestAuthentication extends HttpAuthentication implements MiddlewareInter
     /**
      * Parses the authorization header for a basic authentication.
      *
-     * @param string $header
-     *
      * @return false|array
      */
-    private function parseHeader($header)
+    private function parseHeader(string $header)
     {
         if (strpos($header, 'Digest') !== 0) {
             return false;

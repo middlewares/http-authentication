@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 
 namespace Middlewares;
 
@@ -27,7 +28,7 @@ abstract class HttpAuthentication
      *
      * @param array|ArrayAccess $users [username => password]
      */
-    public function __construct(array $users)
+    public function __construct($users)
     {
         if (!is_array($users) && !($users instanceof ArrayAccess)) {
             throw new InvalidArgumentException(
@@ -40,12 +41,8 @@ abstract class HttpAuthentication
 
     /**
      * Set the realm value.
-     *
-     * @param string $realm
-     *
-     * @return self
      */
-    public function realm($realm)
+    public function realm(string $realm): self
     {
         $this->realm = $realm;
 
@@ -54,12 +51,8 @@ abstract class HttpAuthentication
 
     /**
      * Set the attribute name to store the user name.
-     *
-     * @param string $attribute
-     *
-     * @return self
      */
-    public function attribute($attribute)
+    public function attribute(string $attribute): self
     {
         $this->attribute = $attribute;
 

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 
 namespace Middlewares;
 
@@ -11,13 +12,8 @@ class BasicAuthentication extends HttpAuthentication implements MiddlewareInterf
 {
     /**
      * Process a server request and return a response.
-     *
-     * @param ServerRequestInterface  $request
-     * @param RequestHandlerInterface $handler
-     *
-     * @return ResponseInterface
      */
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler)
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $username = $this->login($request);
 
@@ -35,8 +31,6 @@ class BasicAuthentication extends HttpAuthentication implements MiddlewareInterf
 
     /**
      * Check the user credentials and return the username or false.
-     *
-     * @param ServerRequestInterface $request
      *
      * @return false|string
      */
@@ -64,11 +58,9 @@ class BasicAuthentication extends HttpAuthentication implements MiddlewareInterf
     /**
      * Parses the authorization header for a basic authentication.
      *
-     * @param string $header
-     *
      * @return false|array
      */
-    private function parseHeader($header)
+    private function parseHeader(string $header)
     {
         if (strpos($header, 'Basic') !== 0) {
             return false;
