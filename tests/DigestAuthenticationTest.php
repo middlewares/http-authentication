@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 
 namespace Middlewares\Tests;
 
@@ -15,7 +16,6 @@ class DigestAuthenticationTest extends TestCase
             (new DigestAuthentication(['user' => 'pass']))->realm('My realm')->nonce('xxx'),
         ]);
 
-        $this->assertInstanceOf('Psr\\Http\\Message\\ResponseInterface', $response);
         $this->assertSame(401, $response->getStatusCode());
         $this->assertSame(
             sprintf('Digest realm="My realm",qop="auth",nonce="xxx",opaque="%s"', md5('My realm')),
@@ -23,10 +23,36 @@ class DigestAuthenticationTest extends TestCase
         );
     }
 
+    public function testUserDoesNotExists()
+    {
+        $response = Dispatcher::run(
+            [
+                (new DigestAuthentication(['user' => 'pass']))->realm('My realm')->nonce('xxx'),
+            ],
+            Factory::createServerRequest()
+                ->withHeader('Authorization', $this->authHeader('invalid-user', 'pass', 'My realm', 'xxx'))
+        );
+
+        $this->assertSame(401, $response->getStatusCode());
+    }
+
+    public function testInvalidPassword()
+    {
+        $response = Dispatcher::run(
+            [
+                (new DigestAuthentication(['user' => 'pass']))->realm('My realm')->nonce('xxx'),
+            ],
+            Factory::createServerRequest()
+                ->withHeader('Authorization', $this->authHeader('user', 'invalid-pass', 'My realm', 'xxx'))
+        );
+
+        $this->assertSame(401, $response->getStatusCode());
+    }
+
     public function testSuccess()
     {
         $nonce = uniqid();
-        $request = Factory::createServerRequest([], 'GET', '/')
+        $request = Factory::createServerRequest()
             ->withHeader('Authorization', $this->authHeader('user', 'pass', 'My realm', $nonce));
 
         $response = Dispatcher::run([
@@ -40,25 +66,21 @@ class DigestAuthenticationTest extends TestCase
             },
         ], $request);
 
-        $this->assertInstanceOf('Psr\\Http\\Message\\ResponseInterface', $response);
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame('user', (string) $response->getBody());
     }
 
     /**
      * @see https://tools.ietf.org/html/rfc2069#page-10
-     *
-     * @param string $username
-     * @param string $password
-     * @param string $realm
-     * @param string $nonce
-     * @param string $method
-     * @param string $uri
-     *
-     * @return string
      */
-    private function authHeader($username, $password, $realm, $nonce, $method = 'GET', $uri = '/')
-    {
+    private function authHeader(
+        string $username,
+        string $password,
+        string $realm,
+        string $nonce,
+        string $method = 'GET',
+        string $uri = '/'
+    ): string {
         $nc = '00000001';
         $cnonce = uniqid();
         $qop = 'auth';
@@ -81,6 +103,7 @@ class DigestAuthenticationTest extends TestCase
         );
 
         $header = [];
+
         foreach ($chunks as $name => $value) {
             $header[] = "{$name}=\"{$value}\"";
         }
