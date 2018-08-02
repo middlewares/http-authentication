@@ -26,7 +26,7 @@ class BasicAuthenticationTest extends TestCase
             [
                 (new BasicAuthentication(['user' => 'pass']))->realm('My realm'),
             ],
-            Factory::createServerRequest()
+            Factory::createServerRequest('GET', '/')
                 ->withHeader('Authorization', 'Basic '.base64_encode('invalid-user:pass'))
         );
 
@@ -39,7 +39,7 @@ class BasicAuthenticationTest extends TestCase
             [
                 (new BasicAuthentication(['user' => 'pass']))->realm('My realm'),
             ],
-            Factory::createServerRequest()
+            Factory::createServerRequest('GET', '/')
                 ->withHeader('Authorization', 'Basic '.base64_encode('user:invalid-pass'))
         );
 
@@ -58,7 +58,7 @@ class BasicAuthenticationTest extends TestCase
 
     public function testSuccess()
     {
-        $request = Factory::createServerRequest()
+        $request = Factory::createServerRequest('GET', '/')
             ->withHeader('Authorization', 'Basic '.base64_encode('user:pass'));
 
         $response = Dispatcher::run([

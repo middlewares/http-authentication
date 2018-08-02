@@ -29,7 +29,7 @@ class DigestAuthenticationTest extends TestCase
             [
                 (new DigestAuthentication(['user' => 'pass']))->realm('My realm')->nonce('xxx'),
             ],
-            Factory::createServerRequest()
+            Factory::createServerRequest('GET', '/')
                 ->withHeader('Authorization', $this->authHeader('invalid-user', 'pass', 'My realm', 'xxx'))
         );
 
@@ -42,7 +42,7 @@ class DigestAuthenticationTest extends TestCase
             [
                 (new DigestAuthentication(['user' => 'pass']))->realm('My realm')->nonce('xxx'),
             ],
-            Factory::createServerRequest()
+            Factory::createServerRequest('GET', '/')
                 ->withHeader('Authorization', $this->authHeader('user', 'invalid-pass', 'My realm', 'xxx'))
         );
 
@@ -52,7 +52,7 @@ class DigestAuthenticationTest extends TestCase
     public function testSuccess()
     {
         $nonce = uniqid();
-        $request = Factory::createServerRequest()
+        $request = Factory::createServerRequest('GET', '/')
             ->withHeader('Authorization', $this->authHeader('user', 'pass', 'My realm', $nonce));
 
         $response = Dispatcher::run([

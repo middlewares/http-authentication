@@ -3,6 +3,7 @@ declare(strict_types = 1);
 
 namespace Middlewares;
 
+use Middlewares\Utils\Factory;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -40,7 +41,9 @@ class DigestAuthentication extends HttpAuthentication implements MiddlewareInter
                 md5($this->realm)
             );
 
-            return Utils\Factory::createResponse(401)
+            $responseFactory = $this->responseFactory ?: Factory::getResponseFactory();
+
+            return $responseFactory->createResponse(401)
                 ->withHeader('WWW-Authenticate', $header);
         }
 
