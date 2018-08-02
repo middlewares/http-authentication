@@ -27,7 +27,7 @@ abstract class HttpAuthentication
     /**
      * @var ResponseFactoryInterface
      */
-    private $responseFactory;
+    protected $responseFactory;
 
     /**
      * Define de users.
