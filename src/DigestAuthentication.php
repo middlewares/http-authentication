@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace Middlewares;
 
-use Middlewares\Utils\Factory;
+use Middlewares\Utils\Traits\HasResponseFactory;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -11,6 +11,8 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class DigestAuthentication extends HttpAuthentication implements MiddlewareInterface
 {
+    use HasResponseFactory;
+
     /**
      * @var string|null The nonce value
      */
@@ -41,9 +43,7 @@ class DigestAuthentication extends HttpAuthentication implements MiddlewareInter
                 md5($this->realm)
             );
 
-            $responseFactory = $this->responseFactory ?: Factory::getResponseFactory();
-
-            return $responseFactory->createResponse(401)
+            return $this->createResponse(401)
                 ->withHeader('WWW-Authenticate', $header);
         }
 

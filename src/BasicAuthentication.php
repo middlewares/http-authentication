@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace Middlewares;
 
-use Middlewares\Utils\Factory;
+use Middlewares\Utils\Traits\HasResponseFactory;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -11,6 +11,8 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class BasicAuthentication extends HttpAuthentication implements MiddlewareInterface
 {
+    use HasResponseFactory;
+
     /**
      * Process a server request and return a response.
      */
@@ -19,9 +21,7 @@ class BasicAuthentication extends HttpAuthentication implements MiddlewareInterf
         $username = $this->login($request);
 
         if ($username === false) {
-            $responseFactory = $this->responseFactory ?: Factory::getResponseFactory();
-
-            return $responseFactory->createResponse(401)
+            return $this->createResponse(401)
                 ->withHeader('WWW-Authenticate', sprintf('Basic realm="%s"', $this->realm));
         }
 

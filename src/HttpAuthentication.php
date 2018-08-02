@@ -5,7 +5,6 @@ namespace Middlewares;
 
 use ArrayAccess;
 use InvalidArgumentException;
-use Psr\Http\Message\ResponseFactoryInterface;
 
 abstract class HttpAuthentication
 {
@@ -25,11 +24,6 @@ abstract class HttpAuthentication
     protected $attribute;
 
     /**
-     * @var ResponseFactoryInterface
-     */
-    protected $responseFactory;
-
-    /**
      * Define de users.
      *
      * @param array|ArrayAccess $users [username => password]
@@ -43,16 +37,6 @@ abstract class HttpAuthentication
         }
 
         $this->users = $users;
-    }
-
-    /**
-     * Set the response factory used.
-     */
-    public function responseFactory(ResponseFactoryInterface $responseFactory): self
-    {
-        $this->responseFactory = $responseFactory;
-
-        return $this;
     }
 
     /**
