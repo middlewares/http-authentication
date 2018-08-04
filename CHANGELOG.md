@@ -9,11 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- New option `responseFactory` to configure a custom factory implementing `Psr\Http\Message\ResponseFactoryInterface`
-
-### Changed
-
-- Upgrade dev dependencies
+- PSR-17 support
+- New option `responseFactory`
 
 ## [1.0.0] - 2018-01-25
 

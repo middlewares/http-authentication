@@ -61,7 +61,7 @@ $response = $dispatcher->dispatch(new ServerRequest());
 
 #### `responseFactory(Psr\Http\Message\ResponseFactoryInterface $responseFactory)`
 
-A PSR-17 factory to create the `401` responses.
+A PSR-17 factory to create `401` responses.
 
 ## DigestAuthentication
 
@@ -102,7 +102,7 @@ $response = $dispatcher->dispatch(new ServerRequest());
 
 #### `responseFactory(Psr\Http\Message\ResponseFactoryInterface $responseFactory)`
 
-A PSR-17 factory to create the `401` responses.
+A PSR-17 factory to create `401` responses.
 
 ---
 
