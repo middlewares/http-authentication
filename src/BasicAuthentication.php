@@ -69,7 +69,13 @@ class BasicAuthentication extends HttpAuthentication implements MiddlewareInterf
             return false;
         }
 
-        $header = explode(':', base64_decode(substr($header, 6)), 2);
+        $header = base64_decode(substr($header, 6));
+
+        if ($header === false) {
+            return false;
+        }
+
+        $header = explode(':', $header, 2);
 
         return [
             'username' => $header[0],
