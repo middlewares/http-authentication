@@ -4,6 +4,8 @@ declare(strict_types = 1);
 namespace Middlewares;
 
 use Middlewares\Utils\Traits\HasResponseFactory;
+use Middlewares\Utils\Factory;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -12,6 +14,12 @@ use Psr\Http\Server\RequestHandlerInterface;
 class BasicAuthentication extends HttpAuthentication implements MiddlewareInterface
 {
     use HasResponseFactory;
+
+    public function __construct($users, ResponseFactoryInterface $responseFactory = null)
+    {
+        parent::__construct($users);
+        $this->responseFactory = $responseFactory ?: Factory::getResponseFactory();
+    }
 
     /**
      * Process a server request and return a response.
