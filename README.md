@@ -5,7 +5,6 @@
 [![Build Status][ico-travis]][link-travis]
 [![Quality Score][ico-scrutinizer]][link-scrutinizer]
 [![Total Downloads][ico-downloads]][link-downloads]
-[![SensioLabs Insight][ico-sensiolabs]][link-sensiolabs]
 
 Middleware to implement [RFC 2617 Http Authentication](https://tools.ietf.org/html/rfc2617). Contains the following components:
 
@@ -14,7 +13,7 @@ Middleware to implement [RFC 2617 Http Authentication](https://tools.ietf.org/ht
 
 ## Requirements
 
-* PHP >= 7.0
+* PHP >= 7.2
 * A [PSR-7 http library](https://github.com/middlewares/awesome-psr15-middlewares#psr-7-implementations)
 * A [PSR-15 middleware dispatcher](https://github.com/middlewares/awesome-psr15-middlewares#dispatcher)
 
@@ -30,20 +29,35 @@ composer require middlewares/http-authentication
 
 The [Basic access authentication](https://en.wikipedia.org/wiki/Basic_access_authentication) is the simplest technique.
 
-#### `__construct(array|ArrayAccess $users)`
+You have to provide an `Array` or `ArrayAccess` with the usernames and passwords of all available users. The keys are the usernames and the values the passwords.
 
-`Array` or `ArrayAccess` with the usernames and passwords of all available users. The keys are the usernames and the values the passwords.
+```php
+Dispatcher::run([
+    new Middlewares\BasicAuthentication([
+        'username1' => 'password1',
+        'username2' => 'password2'
+    ])
+]);
+```
 
-#### `realm(string $realm)`
+Optionally, you can provide a `Psr\Http\Message\ResponseFactoryInterface` as the second argument, that will be used to create the error responses (`401`). If it's not defined, [Middleware\Utils\Factory](https://github.com/middlewares/utils#factory) will be used to detect it automatically.
+
+```php
+$responseFactory = new MyOwnResponseFactory();
+
+$route = new Middlewares\BasicAuthentication($users, $responseFactory);
+```
+
+### realm
 
 The realm value. By default is "Login".
 
-#### `attribute(string $attribute)`
+### attribute
 
 The attribute name used to save the username of the user. If it's not defined, it wont be saved. Example:
 
 ```php
-$dispatcher = new Dispatcher([
+Dispatcher::run([
     (new Middlewares\BasicAuthentication([
         'username1' => 'password1',
         'username2' => 'password2'
@@ -55,54 +69,37 @@ $dispatcher = new Dispatcher([
         return new Response('Hello '.$username);
     }
 ]);
-
-$response = $dispatcher->dispatch(new ServerRequest());
 ```
-
-#### `responseFactory(Psr\Http\Message\ResponseFactoryInterface $responseFactory)`
-
-A PSR-17 factory to create `401` responses.
 
 ## DigestAuthentication
 
 The [Digest access authentication](https://en.wikipedia.org/wiki/Digest_access_authentication) is more secure than basic.
 
-#### `__construct(array|ArrayAccess $users)`
+The constructor signature is the same than `BasicAuthentication`:
 
-`Array` or `ArrayAccess` with the usernames and passwords of all available users. The keys are the usernames and the values the passwords.
+```php
+$users = [
+    'username1' => 'password1',
+    'username2' => 'password2'
+];
+$responseFactory = new MyOwnResponseFactory();
 
-#### `realm(string $realm)`
+Dispatcher::run([
+    new Middlewares\DigestAuthentication($users, $responseFactory)
+]);
+```
+
+### realm
 
 The realm value. By default is "Login".
 
-#### `attribute(string $attribute)`
+### attribute
 
-The attribute name used to save the username of the user. If it's not defined, it wont be saved. Example:
+The attribute name used to save the username of the user. If it's not defined, it wont be saved.
 
-#### `nonce(string $nonce)`
+### nonce
 
 To configure the nonce value. If its not defined, it's generated with [uniqid](http://php.net/uniqid)
-
-```php
-$dispatcher = new Dispatcher([
-    (new Middlewares\DigestAuthentication([
-        'username1' => 'password1',
-        'username2' => 'password2'
-    ]))->attribute('username'),
-
-    function ($request) {
-        $username = $request->getAttribute('username');
-
-        return new Response('Hello '.$username);
-    }
-]);
-
-$response = $dispatcher->dispatch(new ServerRequest());
-```
-
-#### `responseFactory(Psr\Http\Message\ResponseFactoryInterface $responseFactory)`
-
-A PSR-17 factory to create `401` responses.
 
 ---
 
@@ -115,10 +112,8 @@ The MIT License (MIT). Please see [LICENSE](LICENSE) for more information.
 [ico-travis]: https://img.shields.io/travis/middlewares/http-authentication/master.svg?style=flat-square
 [ico-scrutinizer]: https://img.shields.io/scrutinizer/g/middlewares/http-authentication.svg?style=flat-square
 [ico-downloads]: https://img.shields.io/packagist/dt/middlewares/http-authentication.svg?style=flat-square
-[ico-sensiolabs]: https://img.shields.io/sensiolabs/i/c2a3efcf-cf41-470a-bf56-84686972fe30.svg?style=flat-square
 
 [link-packagist]: https://packagist.org/packages/middlewares/http-authentication
 [link-travis]: https://travis-ci.org/middlewares/http-authentication
 [link-scrutinizer]: https://scrutinizer-ci.com/g/middlewares/http-authentication
 [link-downloads]: https://packagist.org/packages/middlewares/http-authentication
-[link-sensiolabs]: https://insight.sensiolabs.com/projects/c2a3efcf-cf41-470a-bf56-84686972fe30

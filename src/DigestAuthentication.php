@@ -3,9 +3,6 @@ declare(strict_types = 1);
 
 namespace Middlewares;
 
-use Middlewares\Utils\Traits\HasResponseFactory;
-use Middlewares\Utils\Factory;
-use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -13,18 +10,10 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class DigestAuthentication extends HttpAuthentication implements MiddlewareInterface
 {
-    use HasResponseFactory;
-
     /**
      * @var string|null The nonce value
      */
     private $nonce;
-
-    public function __construct($users, ResponseFactoryInterface $responseFactory = null)
-    {
-        parent::__construct($users);
-        $this->responseFactory = $responseFactory ?: Factory::getResponseFactory();
-    }
 
     /**
      * Set the nonce value.
@@ -43,7 +32,7 @@ class DigestAuthentication extends HttpAuthentication implements MiddlewareInter
     {
         $username = $this->login($request);
 
-        if ($username === false) {
+        if ($username === null) {
             $header = sprintf(
                 'Digest realm="%s",qop="auth",nonce="%s",opaque="%s"',
                 $this->realm,
@@ -51,7 +40,7 @@ class DigestAuthentication extends HttpAuthentication implements MiddlewareInter
                 md5($this->realm)
             );
 
-            return $this->createResponse(401)
+            return $this->responseFactory->createResponse(401)
                 ->withHeader('WWW-Authenticate', $header);
         }
 
@@ -63,27 +52,25 @@ class DigestAuthentication extends HttpAuthentication implements MiddlewareInter
     }
 
     /**
-     * Check the user credentials and return the username or false.
-     *
-     * @return false|string
+     * Check the user credentials and return the username
      */
-    private function login(ServerRequestInterface $request)
+    private function login(ServerRequestInterface $request): ?string
     {
         //Check header
         $authorization = $this->parseHeader($request->getHeaderLine('Authorization'));
 
-        if (!$authorization) {
-            return false;
+        if (empty($authorization)) {
+            return null;
         }
 
         //Check whether user exists
         if (!isset($this->users[$authorization['username']])) {
-            return false;
+            return null;
         }
 
         //Check authentication
         if (!$this->isValid($authorization, $request->getMethod(), $this->users[$authorization['username']])) {
-            return false;
+            return null;
         }
 
         return $authorization['username'];
@@ -109,13 +96,11 @@ class DigestAuthentication extends HttpAuthentication implements MiddlewareInter
 
     /**
      * Parses the authorization header for a basic authentication.
-     *
-     * @return false|array
      */
-    private function parseHeader(string $header)
+    private function parseHeader(string $header): ?array
     {
         if (strpos($header, 'Digest') !== 0) {
-            return false;
+            return null;
         }
 
         $needed_parts = [
@@ -135,11 +120,11 @@ class DigestAuthentication extends HttpAuthentication implements MiddlewareInter
 
         if ($matches) {
             foreach ($matches as $m) {
-                $data[$m[1]] = $m[3] ? $m[3] : $m[4];
+                $data[$m[1]] = $m[3] ?: $m[4];
                 unset($needed_parts[$m[1]]);
             }
         }
 
-        return empty($needed_parts) ? $data : false;
+        return empty($needed_parts) ? $data : null;
     }
 }

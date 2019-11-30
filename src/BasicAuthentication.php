@@ -3,9 +3,6 @@ declare(strict_types = 1);
 
 namespace Middlewares;
 
-use Middlewares\Utils\Traits\HasResponseFactory;
-use Middlewares\Utils\Factory;
-use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -13,14 +10,6 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class BasicAuthentication extends HttpAuthentication implements MiddlewareInterface
 {
-    use HasResponseFactory;
-
-    public function __construct($users, ResponseFactoryInterface $responseFactory = null)
-    {
-        parent::__construct($users);
-        $this->responseFactory = $responseFactory ?: Factory::getResponseFactory();
-    }
-
     /**
      * Process a server request and return a response.
      */
@@ -28,8 +17,8 @@ class BasicAuthentication extends HttpAuthentication implements MiddlewareInterf
     {
         $username = $this->login($request);
 
-        if ($username === false) {
-            return $this->createResponse(401)
+        if ($username === null) {
+            return $this->responseFactory->createResponse(401)
                 ->withHeader('WWW-Authenticate', sprintf('Basic realm="%s"', $this->realm));
         }
 
@@ -41,26 +30,24 @@ class BasicAuthentication extends HttpAuthentication implements MiddlewareInterf
     }
 
     /**
-     * Check the user credentials and return the username or false.
-     *
-     * @return false|string
+     * Check the user credentials and return the username
      */
-    private function login(ServerRequestInterface $request)
+    private function login(ServerRequestInterface $request): ?string
     {
         //Check header
         $authorization = $this->parseHeader($request->getHeaderLine('Authorization'));
 
-        if (!$authorization) {
-            return false;
+        if (empty($authorization)) {
+            return null;
         }
 
         //Check the user
         if (!isset($this->users[$authorization['username']])) {
-            return false;
+            return null;
         }
 
         if ($this->users[$authorization['username']] !== $authorization['password']) {
-            return false;
+            return null;
         }
 
         return $authorization['username'];
@@ -68,19 +55,17 @@ class BasicAuthentication extends HttpAuthentication implements MiddlewareInterf
 
     /**
      * Parses the authorization header for a basic authentication.
-     *
-     * @return false|array
      */
-    private function parseHeader(string $header)
+    private function parseHeader(string $header): ?array
     {
         if (strpos($header, 'Basic') !== 0) {
-            return false;
+            return null;
         }
 
         $header = base64_decode(substr($header, 6));
 
         if ($header === false) {
-            return false;
+            return null;
         }
 
         $header = explode(':', $header, 2);
