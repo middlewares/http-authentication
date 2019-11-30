@@ -13,9 +13,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Support for PHP 7.0 and 7.1
 - The option `responseFactory`. Use the second argument of the constructor.
 
-### Fixed
-- Use `phpstan` as a dev dependency to detect bugs
-
 ## [1.1.0] - 2018-08-04
 ### Added
 - PSR-17 support
