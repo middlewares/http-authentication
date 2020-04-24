@@ -10,6 +10,8 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class BasicAuthentication extends HttpAuthentication implements MiddlewareInterface
 {
+    private $verifyHash = false;
+
     /**
      * Process a server request and return a response.
      */
@@ -29,6 +31,13 @@ class BasicAuthentication extends HttpAuthentication implements MiddlewareInterf
         return $handler->handle($request);
     }
 
+    public function verifyHash($verifyHash = true): self
+    {
+        $this->verifyHash = $verifyHash;
+
+        return $this;
+    }
+
     /**
      * Check the user credentials and return the username
      */
@@ -46,11 +55,15 @@ class BasicAuthentication extends HttpAuthentication implements MiddlewareInterf
             return null;
         }
 
-        if ($this->users[$authorization['username']] !== $authorization['password']) {
-            return null;
+        if ($this->verifyHash) {
+            return password_verify($authorization['password'], $this->users[$authorization['username']])
+                ? $authorization['username']
+                : null;
         }
 
-        return $authorization['username'];
+        return $this->users[$authorization['username']] === $authorization['password']
+            ? $authorization['username']
+            : null;
     }
 
     /**

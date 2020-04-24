@@ -74,4 +74,24 @@ class BasicAuthenticationTest extends TestCase
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame('user', (string) $response->getBody());
     }
+
+    public function testHashSuccess()
+    {
+        $request = Factory::createServerRequest('GET', '/')
+            ->withHeader('Authorization', 'Basic '.base64_encode('user:rasmuslerdorf'));
+
+        $response = Dispatcher::run([
+            (new BasicAuthentication(['user' => '$2y$07$BCryptRequires22Chrcte/VlQH0piJtjXl.0t1XkA8pw9dMXTpOq']))
+                ->verifyHash()
+                ->realm('My realm')
+                ->attribute('auth-username'),
+
+            function ($request) {
+                echo $request->getAttribute('auth-username');
+            },
+        ], $request);
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame('user', (string) $response->getBody());
+    }
 }

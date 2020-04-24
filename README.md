@@ -71,6 +71,28 @@ Dispatcher::run([
 ]);
 ```
 
+### verifyHash
+
+This option verifies the password using [`password_verify`](https://www.php.net/manual/en/function.password-verify.php). Useful if you don't want to provide the passwords in plain text.
+
+```php
+$users = [
+    'username' => password_hash('secret-password', PASSWORD_DEFAULT);
+]
+
+Dispatcher::run([
+    (new Middlewares\BasicAuthentication($users))
+        ->attribute('username')
+        ->verifyHash(),
+
+    function ($request) {
+        $username = $request->getAttribute('username');
+
+        return new Response('Hello '.$username);
+    }
+]);
+```
+
 ## DigestAuthentication
 
 The [Digest access authentication](https://en.wikipedia.org/wiki/Digest_access_authentication) is more secure than basic.
