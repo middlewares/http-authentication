@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.1.1] - 2020-12-02
+### Added
+- Support for PHP 8
+
 ## [2.1.0] - 2020-04-24
 ### Added
 - Option `BasicAuthentication::verifyHash()` [#2]
@@ -65,6 +69,7 @@ First version
 
 [#2]: https://github.com/middlewares/http-authentication/issues/2
 
+[2.1.1]: https://github.com/middlewares/http-authentication/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/middlewares/http-authentication/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/middlewares/http-authentication/compare/v1.1.0...v2.0.0
 [1.1.0]: https://github.com/middlewares/http-authentication/compare/v1.0.0...v1.1.0
