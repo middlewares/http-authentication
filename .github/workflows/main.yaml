@@ -44,10 +44,10 @@ jobs:
                 - 7.2
                 - 7.3
                 - 7.4
-              composer-args: [ "" ]
-              include:
-                - php: 8.0
-                  composer-args: --ignore-platform-reqs
+                - 8.0
+                - 8.1
+                - 8.2
+                - 8.3
             fail-fast: false
 
         steps:
@@ -67,7 +67,7 @@ jobs:
                   restore-keys: ${{ runner.os }}-php-${{ matrix.php }}-composer-
 
             - name: Install dependencies
-              run: composer install --prefer-dist --no-progress ${{ matrix.composer-args }}
+              run: composer install --prefer-dist --no-progress
 
             - name: Tests
               run: composer test
