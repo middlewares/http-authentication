@@ -124,6 +124,7 @@ class DigestAuthentication extends HttpAuthentication implements MiddlewareInter
 
         if ($matches) {
             foreach ($matches as $m) {
+                // @phpstan-ignore-next-line
                 $data[$m[1]] = $m[3] ?: $m[4];
                 unset($needed_parts[$m[1]]);
             }

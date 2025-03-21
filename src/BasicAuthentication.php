@@ -51,8 +51,8 @@ class BasicAuthentication extends HttpAuthentication implements MiddlewareInterf
             return null;
         }
 
-        //Check the user
-        if (!isset($this->users[$authorization['username']])) {
+        //Check the user and password
+        if (!isset($this->users[$authorization['username']]) || !isset($authorization['password'])) {
             return null;
         }
 
@@ -70,7 +70,7 @@ class BasicAuthentication extends HttpAuthentication implements MiddlewareInterf
     /**
      * Parses the authorization header for a basic authentication.
      *
-     * @return ?array<string, string|null>
+     * @return ?array<string, string>
      */
     private function parseHeader(string $header): ?array
     {
@@ -78,8 +78,13 @@ class BasicAuthentication extends HttpAuthentication implements MiddlewareInterf
             return null;
         }
 
+        $userAndPassword = substr($header, 6);
+        if (!$userAndPassword) {
+            return null;
+        }
+
         /** @var string|false $header */
-        $header = base64_decode(substr($header, 6));
+        $header = base64_decode($userAndPassword);
 
         if ($header === false) {
             return null;
@@ -89,7 +94,7 @@ class BasicAuthentication extends HttpAuthentication implements MiddlewareInterf
 
         return [
             'username' => $header[0],
-            'password' => $header[1] ?? null,
+            'password' => $header[1],
         ];
     }
 }
