@@ -78,6 +78,8 @@ class DigestAuthentication extends HttpAuthentication implements MiddlewareInter
 
     /**
      * Validates the authorization.
+     *
+     * @param array<string,string> $authorization
      */
     private function isValid(array $authorization, string $method, string $password): bool
     {
@@ -96,6 +98,8 @@ class DigestAuthentication extends HttpAuthentication implements MiddlewareInter
 
     /**
      * Parses the authorization header for a basic authentication.
+     *
+     * @return array<string, string>|null $header
      */
     private function parseHeader(string $header): ?array
     {
@@ -120,6 +124,7 @@ class DigestAuthentication extends HttpAuthentication implements MiddlewareInter
 
         if ($matches) {
             foreach ($matches as $m) {
+                // @phpstan-ignore-next-line
                 $data[$m[1]] = $m[3] ?: $m[4];
                 unset($needed_parts[$m[1]]);
             }
