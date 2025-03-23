@@ -11,7 +11,7 @@ use Psr\Http\Message\ResponseFactoryInterface;
 abstract class HttpAuthentication
 {
     /**
-     * @var array|ArrayAccess The available users
+     * @var array<string, string>|ArrayAccess<string, string> The available users
      */
     protected $users;
 
@@ -31,11 +31,11 @@ abstract class HttpAuthentication
     protected $responseFactory;
 
     /**
-     * @param array|ArrayAccess $users [username => password]
+     * @param array<string, string>|ArrayAccess<string, string> $users [username => password]
      */
-    public function __construct($users, ResponseFactoryInterface $responseFactory = null)
+    public function __construct($users, ?ResponseFactoryInterface $responseFactory = null)
     {
-        if (!is_array($users) && !($users instanceof ArrayAccess)) {
+        if (!is_array($users) && !$users instanceof ArrayAccess) {
             throw new InvalidArgumentException(
                 'The users argument must be an array or implement the ArrayAccess interface'
             );

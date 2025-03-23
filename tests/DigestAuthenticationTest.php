@@ -10,9 +10,10 @@ use PHPUnit\Framework\TestCase;
 
 class DigestAuthenticationTest extends TestCase
 {
-    public function testError()
+    public function testError(): void
     {
         $response = Dispatcher::run([
+            // @phpstan-ignore-next-line
             (new DigestAuthentication(['user' => 'pass']))->realm('My realm')->nonce('xxx'),
         ]);
 
@@ -23,10 +24,11 @@ class DigestAuthenticationTest extends TestCase
         );
     }
 
-    public function testUserDoesNotExists()
+    public function testUserDoesNotExists(): void
     {
         $response = Dispatcher::run(
             [
+                // @phpstan-ignore-next-line
                 (new DigestAuthentication(['user' => 'pass']))->realm('My realm')->nonce('xxx'),
             ],
             Factory::createServerRequest('GET', '/')
@@ -36,10 +38,11 @@ class DigestAuthenticationTest extends TestCase
         $this->assertSame(401, $response->getStatusCode());
     }
 
-    public function testInvalidPassword()
+    public function testInvalidPassword(): void
     {
         $response = Dispatcher::run(
             [
+                // @phpstan-ignore-next-line
                 (new DigestAuthentication(['user' => 'pass']))->realm('My realm')->nonce('xxx'),
             ],
             Factory::createServerRequest('GET', '/')
@@ -49,7 +52,7 @@ class DigestAuthenticationTest extends TestCase
         $this->assertSame(401, $response->getStatusCode());
     }
 
-    public function testSuccess()
+    public function testSuccess(): void
     {
         $nonce = uniqid();
         $request = Factory::createServerRequest('GET', '/')
